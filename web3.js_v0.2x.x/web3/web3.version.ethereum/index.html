@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="../../libs/web3.js_v0.20.6/web3.min.js"></script>
+</head>
+<body>
+
+  <div id="info"></div>
+
+  <script>
+    function example() {
+      // 同期プログラム
+      // var version = web3.version.ethereum;
+      // console.log(version);
+      // document.getElementById("info").innerText = "Ethereum protocol version: " + version;
+
+      // 非同期プログラム
+      web3.version.getEthereum((error, result) => {
+        console.log(result);
+        document.getElementById("info").innerText = "Ethereum protocol version: " + result;
+      });
+    }
+
+    window.onload = function() {
+      if (typeof web3 !== 'undefined') {
+        console.log("Using currentProvider: ", web3.currentProvider);
+        web3 = new Web3(web3.currentProvider);
+      } else {
+        console.log("Using infura");
+        web3 = new Web3(new Web3.providers.HttpProvider("https://mainnet.infura.io"));
+      }
+      example();
+    }
+  </script>
+
+</body>
+</html>
