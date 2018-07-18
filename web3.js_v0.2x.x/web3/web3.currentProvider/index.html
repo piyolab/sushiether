@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="../../libs/web3.js_v0.20.6/web3.min.js"></script>
+</head>
+<body>
+
+  <div>provider: <input id="provider" type="text" value="https://ropsten.infura.io"/></div>
+  <div><button onclick="example();">Set a new provider</button>
+  <div id="info"></div>
+
+  <script>
+    // ボタンクリック時に呼ばれます。
+    function example() {
+      // 新たなプロバイダをセットします。
+      var provider = document.getElementById("provider").value;
+      web3.setProvider(new web3.providers.HttpProvider(provider));
+
+      // 現在のプロバイダを表示します。
+      var currentProvider = web3.currentProvider;
+      console.log("currentProvider: ", currentProvider);
+      document.getElementById("info").innerText = "currentProvider: " + JSON.stringify(currentProvider);      
+    }
+
+    window.onload = function() {
+      if (typeof web3 !== 'undefined') {
+        console.log("Using currentProvider: ", web3.currentProvider);
+        web3 = new Web3(web3.currentProvider);
+      } else {
+        console.log("Using infura");
+        web3 = new Web3(new Web3.providers.HttpProvider("https://mainnet.infura.io"));      
+      }
+    }
+  </script>
+
+</body>
+</html>
