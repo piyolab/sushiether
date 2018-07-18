@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="../../libs/web3.js_v0.20.6/web3.min.js"></script>
+</head>
+<body>
+
+  <div id="info"></div>
+
+  <script>
+    function example() {
+      var isConnected = web3.isConnected();
+      console.log(isConnected);
+      document.getElementById("info").innerText = "Connection status to a node: " + isConnected;      
+    }
+
+    window.onload = function() {
+      if (typeof web3 !== 'undefined') {
+        console.log("Using currentProvider: ", web3.currentProvider);
+        web3 = new Web3(web3.currentProvider);
+      } else {
+        console.log("Using infura");
+        web3 = new Web3(new Web3.providers.HttpProvider("https://mainnet.infura.io"));
+      }
+      example();
+    }
+  </script>
+
+</body>
+</html>
