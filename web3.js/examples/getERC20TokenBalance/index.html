@@ -51,7 +51,7 @@
     }
 
     window.onload = function() {
-      web3js = new Web3(Web3.givenProvider || 'wss://mainnet.infura.io/ws');
+      web3js = new Web3(Web3.givenProvider);
       console.log(web3js.version);
     }
 
