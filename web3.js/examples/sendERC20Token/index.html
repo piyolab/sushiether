@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="../../libs/web3.js_v1.0.0-beta.35/web3.min.js"></script>
+</head>
+<body>
+
+  <h1>Send ERC20 Token</h1>
+
+  <h2>Notes</h2>
+  <ul>
+    <li>Use MetaMask</li>
+    <li>To check ERC20 balance, use <a href="../getERC20TokenBalance/" target="_blank">getERC20TokenBalance</a></li>
+  </ul>
+
+  <h2>Token Address</h2>
+  <input type="text" id="token-address" size="80" oninput="onAddressChange()"></input>
+  <p>e.g. 0x2A65D41dbC6E8925bD9253abfAdaFab98eA53E34</p>
+
+  <h2>Recipients Address</h2>
+  <input type="text" id="to-address" size="80"></input>
+  <p>e.g. 0x8Df70546681657D6FFE227aB51662e5b6e831B7A</p>
+
+  <h2>Decimals</h2>
+  <input type="number" id="decimals" size="40" readonly></input>
+
+  <h2>Amount</h2>
+  <input type="number" id="amount" size="40"></input>
+
+  <div><button id="send" onclick="send()">Send ERC20 Token</button></div>
+
+  <h2>Result</h2>
+  <span id="result"></span>
+
+  <script>
+
+    var web3js;
+    var account;
+
+    function getERC20TokenBalance(tokenAddress, walletAddress, callback) {
+      let minABI = [
+        {"constant":true,"inputs":[{"name":"_owner","type":"address"}],"name":"balanceOf","outputs":[{"name":"balance","type":"uint256"}],"type":"function"},
+        {"constant":true,"inputs":[],"name":"decimals","outputs":[{"name":"","type":"uint8"}],"type":"function"}
+      ];
+      let contract = new web3js.eth.Contract(minABI, tokenAddress);
+      contract.methods.balanceOf(walletAddress).call((error, balance) => {
+        contract.methods.decimals().call((error, decimals) => {
+          console.log(balance);
+          console.log(decimals);
+          balance = balance / (10**decimals);
+          callback(balance);
+        });
+      });
+    }
+
+    function getERC20TokenContract(tokenAddress) {
+      let minABI = [
+        {"constant":true,"inputs":[{"name":"_owner","type":"address"}],"name":"balanceOf","outputs":[{"name":"balance","type":"uint256"}],"type":"function"},
+        {"constant":true,"inputs":[],"name":"decimals","outputs":[{"name":"","type":"uint8"}],"type":"function"},
+        {"constant":false,"inputs":[{"name":"_to","type":"address"},{"name":"_value","type":"uint256"}],"name":"transfer","outputs":[{"name":"","type":"bool"}],"type":"function"}
+      ];
+      return new web3js.eth.Contract(minABI, tokenAddress);
+    }
+
+    function getERC20TokenDecimals(callback) {
+      window.tokenContract.methods.decimals().call((error, decimals) => {
+        callback(decimals);
+      });
+    }
+
+    function onAddressChange(e) {
+      let tokenAddress = document.getElementById('token-address').value;
+      if(tokenAddress != "") {
+        window.tokenContract = getERC20TokenContract(tokenAddress);
+        getERC20TokenDecimals((decimals) => {
+          document.getElementById('decimals').value = decimals;
+        });
+      }
+    }
+
+    function transferERC20Token(toAddress, value, callback) {
+      window.tokenContract.methods.transfer(toAddress, value).send({from: account})
+      .on('transactionHash', function(hash){
+        callback(hash);
+      });
+    }
+
+    function send() {
+      var toAddress = document.getElementById('to-address').value;
+      var decimals = web3js.utils.toBN(document.getElementById('decimals').value);
+      var amount = web3js.utils.toBN(document.getElementById('amount').value);
+      var sendValue = amount.mul(web3js.utils.toBN(10).pow(decimals));
+      console.log(sendValue.toString());
+      transferERC20Token(toAddress, sendValue, (txHash) => {
+        document.getElementById('result').innerText = txHash;
+      });
+    }
+
+    window.onload = function() {
+      web3js = new Web3(Web3.givenProvider);
+      console.log(web3js.version);
+      var accountInterval = setInterval(function() {
+        web3js.eth.getAccounts((error, address) => {
+          if (address[0] !== account) {
+            account = address[0];
+            console.log(account);
+          }
+        });
+
+      }, 300);
+    }
+
+  </script>
+
+</body>
+</html>
