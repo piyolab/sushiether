@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="../../libs/web3.js_v1.0.0-beta.33/web3.min.js"></script>
+</head>
+<body>
+
+  <div id="info"></div>
+
+  <script>
+    function example() {
+      const result = Web3.utils.randomHex(8);
+      console.log(result);
+      document.getElementById('info').innerText = result;
+    }
+
+    window.onload = function() {
+      if (typeof web3 !== 'undefined') {
+        web3 = new Web3(web3.currentProvider);
+        console.log("use currentProvider");
+      } else {
+        var web3 = new Web3('wss://mainnet.infura.io/ws');
+        console.log("use infura");
+      }
+      example();
+    }
+
+  </script>
+
+</body>
+</html>
