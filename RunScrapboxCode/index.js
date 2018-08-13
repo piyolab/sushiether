@@ -9,7 +9,6 @@ function loadScript (url) {
 
 async function loadAllScripts (urls) {
   for (let url of urls) {
-    console.log(url)
     await loadScript(url)
   }
 }
